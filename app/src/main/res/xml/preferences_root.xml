@@ -1,0 +1,51 @@
+<!--设置页面主页面-->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--休眠-->
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/prefs_dormant_header">
+
+        <!--自动休眠-->
+        <!--app:showSeekBarValue 是否显示当前值-->
+        <SeekBarPreference
+            android:max="@integer/prefs_dormant_max"
+            app:iconSpaceReserved="false"
+            app:key="@string/prefs_dormant_key"
+            app:min="@integer/prefs_dormant_min"
+            app:showSeekBarValue="true"
+            app:title="@string/prefs_dormant_title" />
+
+    </PreferenceCategory>
+
+    <!--亮度-->
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/prefs_brightness_header">
+
+        <!--调整亮度-->
+        <SeekBarPreference
+            android:max="@integer/prefs_brightness_max"
+            app:iconSpaceReserved="false"
+            app:key="@string/prefs_brightness_key"
+            app:min="@integer/prefs_brightness_min"
+            app:showSeekBarValue="true"
+            app:title="@string/prefs_brightness_title" />
+
+    </PreferenceCategory>
+
+    <!--主题-->
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/prefs_theme_header">
+
+        <!--切换夜间模式-->
+        <SwitchPreferenceCompat
+            app:iconSpaceReserved="false"
+            app:key="@string/prefs_dark_key"
+            app:title="@string/prefs_dark_title" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--偏好设置的自动休眠时长最大值-->
+    <integer name="prefs_dormant_max">0x7fffffff</integer>
+    <!--偏好设置的自动休眠时长最小值-->
+    <integer name="prefs_dormant_min">15000</integer>
+    <!--偏好设置的亮度最大值-->
+    <integer name="prefs_brightness_max">255</integer>
+    <!--偏好设置的亮度最小值-->
+    <integer name="prefs_brightness_min">15</integer>
+</resources>

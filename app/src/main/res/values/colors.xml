@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--基础色-->
+    <color name="colorPrimary">#029FEE</color>
+    <color name="colorPrimaryDark">#028FD6</color>
+    <color name="colorAccent">#FF69B4</color>
+
+    <!--渐变色-->
+    <color name="startColor">#3DA4FD</color>
+    <color name="centerColor">#31B3FB</color>
+    <color name="endColor">#24C2FB</color>
+</resources>
