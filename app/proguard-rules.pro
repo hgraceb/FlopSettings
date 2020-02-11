@@ -19,3 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# 设置页面混淆规则，搜索直达：EmptyFragment
+-keep class com.flop.settings.activity.MainActivity$EmptyFragment { public *; }
