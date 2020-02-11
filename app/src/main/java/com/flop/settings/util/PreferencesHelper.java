@@ -30,6 +30,22 @@ public class PreferencesHelper {
         return getBooleanFromResources(context, R.string.prefs_brightness_auto_key, R.bool.prefs_brightness_auto_default);
     }
 
+    /**
+     * 获取是否启用夜间模式
+     */
+    public static boolean isDark() {
+        Context context = MyApplication.getContext();
+        return getBooleanFromResources(context, R.string.prefs_dark_key, R.bool.prefs_dark_default);
+    }
+
+    /**
+     * 获取是否隐藏空页面的状态栏
+     */
+    public static boolean isStatusBarHide() {
+        Context context = MyApplication.getContext();
+        return getBooleanFromResources(context, R.string.prefs_status_bar_hide_key, R.bool.prefs_status_bar_hide_default);
+    }
+
     public static int getIntFromResources(Context context, int resKeyId, int resDefValueId) {
         return getInt(context, context.getString(resKeyId), context.getString(resDefValueId));
     }

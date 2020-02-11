@@ -6,4 +6,6 @@
     <bool name="prefs_brightness_auto_default">false</bool>
     <!--是否启用夜间模式的默认值-->
     <bool name="prefs_dark_default">false</bool>
+    <!--是否隐藏空页面的状态栏-->
+    <bool name="prefs_status_bar_hide_default">true</bool>
 </resources>

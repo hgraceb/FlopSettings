@@ -1,11 +1,15 @@
 package com.flop.settings.activity;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -16,6 +20,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -42,6 +47,9 @@ public class MainActivity extends BaseActivity implements PreferenceFragmentComp
 
     private OnWindowFocusChangedListener mOnWindowFocusChangeListener;
 
+    private static Drawable mToolBarColor;
+    private static Drawable mBackgroundColor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,18 +62,38 @@ public class MainActivity extends BaseActivity implements PreferenceFragmentComp
                 .replace(R.id.settings, new SettingsFragment())
                 .commit();
 
+        // 设置顶部导航栏
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         // 设置返回栈事件监听
         getSupportFragmentManager().addOnBackStackChangedListener(() -> {
             // 如果是栈底，即设置页面的主页面
             if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
                 // 设置主页面标题
                 setTitle(getString(R.string.title_activity_main));
+                // 显示状态栏
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+                if (mBackgroundColor != null) {
+                    getWindow().setBackgroundDrawable(mBackgroundColor);
+                }
+                if (mToolBarColor != null) {
+                    // 如果是夜间模式
+                    if (PreferencesHelper.isDark()) {
+                        // 设置顶部导航栏背景色为透明
+                        toolbar.setBackground(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+                    } else {
+                        // 设置顶部导航栏背景色为原来的颜色
+                        toolbar.setBackground(mToolBarColor);
+                    }
+                }
+                // 设置状态栏为透明
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mActivity.getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent));
+                }
             }
         });
-
-        // 设置顶部导航栏
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
     }
 
     /**
@@ -109,13 +137,9 @@ public class MainActivity extends BaseActivity implements PreferenceFragmentComp
         if (!getString(R.string.prefs_empty_title).contentEquals(pref.getTitle())) {
             // Fragment跳转后重新设置标题
             setTitle(pref.getTitle());
-            // 显示状态栏
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         } else {
             // 如果是跳转到空页面，则设置标题为空
             setTitle(null);
-            // 隐藏状态栏
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
         return false;
     }
@@ -426,6 +450,73 @@ public class MainActivity extends BaseActivity implements PreferenceFragmentComp
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences_empty, rootKey);
+
+            // 初始化页面
+            init();
+        }
+
+        /**
+         * 初始化页面
+         */
+        private void init() {
+            // 如果用户选择隐藏空页面的状态栏
+            if (PreferencesHelper.isStatusBarHide()) {
+                // 隐藏状态栏
+                mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            }
+
+            // 获取黑色资源
+            int colorBlack = getResources().getColor(android.R.color.black);
+            ColorDrawable drawableBlack = new ColorDrawable(colorBlack);
+            // 设置背景颜色为全黑
+            mActivity.getWindow().setBackgroundDrawable(drawableBlack);
+            // 设置状态栏为全黑
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mActivity.getWindow().setStatusBarColor(colorBlack);
+            }
+            ActionBar supportActionBar = mActivity.getSupportActionBar();
+            // 如果有导航栏
+            if (supportActionBar != null) {
+                // 设置导航栏颜色为全黑
+                supportActionBar.setBackgroundDrawable(drawableBlack);
+            }
+
+            // 保存原来的窗口背景色
+            mBackgroundColor = getWindowBackground(mActivity);
+            // 保存原来的顶部导航栏背景色
+            mToolBarColor = getActionBarBackground(mActivity);
+        }
+
+        /**
+         * 获取窗口背景色
+         */
+        private Drawable getWindowBackground(Context context) {
+            // 获取原来的窗口背景色
+            TypedArray array = context.getTheme().obtainStyledAttributes(new int[]{
+                    android.R.attr.colorBackground,
+            });
+            try {
+                return array.getDrawable(0);
+            } finally {
+                array.recycle();
+            }
+        }
+
+        /**
+         * 获取状态栏背景色
+         */
+        private Drawable getActionBarBackground(Context context) {
+            int[] android_styleable_ActionBar = {android.R.attr.background};
+            // Need to get resource id of style pointed to from actionBarStyle
+            TypedValue outValue = new TypedValue();
+            context.getTheme().resolveAttribute(android.R.attr.actionBarStyle, outValue, true);
+            // Now get action bar style values...
+            TypedArray abStyle = context.getTheme().obtainStyledAttributes(outValue.resourceId, android_styleable_ActionBar);
+            try {
+                return abStyle.getDrawable(0);
+            } finally {
+                abStyle.recycle();
+            }
         }
     }
 }

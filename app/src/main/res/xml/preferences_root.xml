@@ -72,11 +72,21 @@
         app:iconSpaceReserved="false"
         app:title="@string/prefs_other_header">
 
+        <!--是否隐藏空页面的状态栏-->
+        <SwitchPreferenceCompat
+            android:key="@string/prefs_status_bar_hide_key"
+            android:summaryOff="@string/prefs_status_bar_hide_off"
+            android:summaryOn="@string/prefs_status_bar_hide_on"
+            app:defaultValue="@bool/prefs_status_bar_hide_default"
+            app:iconSpaceReserved="false"
+            app:title="@string/prefs_status_bar_hide_title" />
+
         <!--打开省电用空页面-->
         <Preference
             app:enableCopying="true"
             app:fragment="com.flop.settings.activity.MainActivity$EmptyFragment"
             app:iconSpaceReserved="false"
+            app:summary="@string/prefs_empty_summary"
             app:title="@string/prefs_empty_title" />
 
     </PreferenceCategory>

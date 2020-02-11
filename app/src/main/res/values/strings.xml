@@ -32,6 +32,12 @@
     <string name="prefs_dark_title">夜间模式</string>
     <!--其他-->
     <string name="prefs_other_header">其他</string>
+    <!--自动隐藏空页面状态栏-->
+    <string name="prefs_status_bar_hide_key">prefs_status_bar_hide_key</string>
+    <string name="prefs_status_bar_hide_off">打开空页面时不隐藏状态栏</string>
+    <string name="prefs_status_bar_hide_on">打开空页面时自动隐藏状态栏</string>
+    <string name="prefs_status_bar_hide_title">隐藏空页面状态栏</string>
     <!--空页面设置项的标题-->
     <string name="prefs_empty_title">空页面</string>
+    <string name="prefs_empty_summary">打开纯黑空白页，降低电量消耗</string>
 </resources>
