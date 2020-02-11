@@ -39,5 +39,5 @@
     <string name="prefs_status_bar_hide_title">隐藏空页面状态栏</string>
     <!--空页面设置项的标题-->
     <string name="prefs_empty_title">空页面</string>
-    <string name="prefs_empty_summary">打开纯黑空白页，降低电量消耗</string>
+    <string name="prefs_empty_summary">打开纯黑空页面，降低电量消耗</string>
 </resources>
