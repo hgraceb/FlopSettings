@@ -63,7 +63,7 @@ public class BaseActivity extends AppCompatActivity {
                                     intent.setData(uri);
                                     startActivityForResult(intent, STORAGE_PERMISSION_REQUEST_CODE);
                                 })
-                                .setNegativeButton("取消", (dialog, which) -> {
+                                .setNegativeButton("退出", (dialog, which) -> {
                                     //引导用户手动授权，权限请求失败
                                     Log.i(TAG, "用户点击取消按钮，权限请求失败");
                                     finish();

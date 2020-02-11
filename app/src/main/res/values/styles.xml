@@ -10,8 +10,23 @@
         <!--需要statusBar颜色透明fitsSystemWindows属性才会生效，从而实现沉浸式状态栏-->
         <!--设置 android:windowTranslucentStatus 属性为 true 会导致对话框无法自动调整位置-->
         <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/transparent</item>
+
+        <!--对话框的按钮颜色样式-->
+        <item name="buttonBarNegativeButtonStyle">@style/AppTheme.TextButton</item>
+        <item name="buttonBarPositiveButtonStyle">@style/AppTheme.TextButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/AppTheme.TextButton</item>
+
     </style>
 
+    <!--顶部导航栏样式-->
     <style name="AppTheme.AppBarOverlay" parent="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+
+    <!--对话框按钮样式-->
+    <style name="AppTheme.TextButton" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+        <!--按钮的文本颜色-->
+        <item name="android:textColor">@color/colorAccent</item>
+        <!--按钮点击时的水波纹颜色-->
+        <item name="rippleColor">?attr/colorControlHighlight</item>
+    </style>
 
 </resources>

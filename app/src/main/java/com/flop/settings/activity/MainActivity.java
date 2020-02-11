@@ -1,20 +1,26 @@
 package com.flop.settings.activity;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreferenceCompat;
@@ -22,15 +28,19 @@ import androidx.preference.SwitchPreferenceCompat;
 import com.flop.settings.R;
 import com.flop.settings.base.BaseActivity;
 import com.flop.settings.util.EdgeUtil;
+import com.flop.settings.util.PreferencesHelper;
 import com.flop.settings.util.SettingUtil;
 import com.flop.settings.util.ThemeHelper;
 import com.flop.settings.util.TimeUtils;
 
-public class MainActivity extends BaseActivity {
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+public class MainActivity extends BaseActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, ViewTreeObserver.OnWindowFocusChangeListener {
 
     private static final String TAG = "FLOP";
 
     private static AppCompatActivity mActivity;
+
+    private OnWindowFocusChangedListener mOnWindowFocusChangeListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +68,59 @@ public class MainActivity extends BaseActivity {
         setSupportActionBar(toolbar);
     }
 
-    public static class SettingsFragment extends PreferenceFragmentCompat {
+    /**
+     * 监听窗口焦点变化
+     */
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        // 回调窗口焦点变化的接口
+        mOnWindowFocusChangeListener.onWindowFocusChanged(hasFocus);
+    }
+
+    /**
+     * 绑定窗口焦点变化的接口
+     */
+    @Override
+    public void onAttachFragment(@NonNull Fragment fragment) {
+        super.onAttachFragment(fragment);
+        // 只有实现了指定接口的 fragment 才可以用于接口绑定
+        try {
+            mOnWindowFocusChangeListener = (OnWindowFocusChangedListener) fragment;
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * 窗口焦点变化的接口
+     */
+    public interface OnWindowFocusChangedListener {
+        /**
+         * @param hasFocus 当前窗口是否获取焦点
+         */
+        public void onWindowFocusChanged(boolean hasFocus);
+    }
+
+    /**
+     * 监听设置页面的Fragment跳转
+     */
+    @Override
+    public boolean onPreferenceStartFragment(PreferenceFragmentCompat caller, Preference pref) {
+        // 如果当前页面不是空页面
+        if (!getString(R.string.prefs_empty_title).contentEquals(pref.getTitle())) {
+            // Fragment跳转后重新设置标题
+            setTitle(pref.getTitle());
+            // 显示状态栏
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            // 如果是跳转到空页面，则设置标题为空
+            setTitle(null);
+            // 隐藏状态栏
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+        return false;
+    }
+
+    public static class SettingsFragment extends PreferenceFragmentCompat implements OnWindowFocusChangedListener {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences_root, rootKey);
@@ -68,14 +130,33 @@ public class MainActivity extends BaseActivity {
         }
 
         /**
+         * 监听窗口焦点变化
+         *
+         * @param hasFocus 当前窗口是否获取焦点
+         */
+        @Override
+        public void onWindowFocusChanged(boolean hasFocus) {
+            // 如果当前窗口获得了焦点
+            if (hasFocus) {
+                // 刷新所有设置项
+                refreshPrefs();
+            }
+        }
+
+        /**
          * 初始化设置页面
          */
         private void init() {
-            // 设置“自动休眠”设置项的标题
-            setDormantTitle();
             // 初始化“自动休眠”的设置
             SeekBarPreference prefDormant = findPreference(getString(R.string.prefs_dormant_key));
             if (prefDormant != null) {
+                // 如果选择自动调节自动休眠时长
+                if (PreferencesHelper.isDormantAuto()) {
+                    // 设置自动休眠时长为最大值
+                    setDormant(getResources().getInteger(R.integer.prefs_dormant_max));
+                }
+
+                // 监听拖动条控件的点击事件
                 prefDormant.setOnPreferenceClickListener(preference -> {
                     // 创建并显示设置“自动休眠”的对话框
                     showDormantDialog();
@@ -84,25 +165,39 @@ public class MainActivity extends BaseActivity {
                     return true;
                 });
 
+                // 监听拖动条控件的数值变化
                 prefDormant.setOnPreferenceChangeListener((preference, newValue) -> {
                     // 设置自动休眠时长
-                    SettingUtil.setDormant((int) newValue);
-                    // 更新“自动休眠”设置的标题
-                    setDormantTitle();
-                    // 返回 true 调用原生事件
-                    return true;
+                    setDormant((int) newValue);
+                    // 返回 false 屏蔽原生事件
+                    return false;
                 });
             }
 
-            // 初始化“调整亮度”的设置
+            // 初始化“调节亮度”的设置项
             SeekBarPreference prefBrightness = findPreference(getString(R.string.prefs_brightness_key));
             if (prefBrightness != null) {
-                // 更新亮度设置
+                // 如果选择自动调节亮度
+                if (PreferencesHelper.isBrightnessAuto()) {
+                    // 设置亮度为最小值
+                    setBrightness(getResources().getInteger(R.integer.prefs_brightness_min));
+                }
+
+                // 监听拖动条控件的点击事件
+                prefBrightness.setOnPreferenceClickListener(preference -> {
+                    // 创建并显示设置“调节亮度”的对话框
+                    showBrightnessDialog();
+
+                    // 返回 true 屏蔽原生事件
+                    return true;
+                });
+
+                // 监听拖动条控件的数值变化
                 prefBrightness.setOnPreferenceChangeListener((preference, newValue) -> {
                     // 设置亮度
-                    SettingUtil.setScreenBrightness((int) newValue);
-                    // 返回 true 调用原生事件
-                    return true;
+                    setBrightness((int) newValue);
+                    // 返回 false 屏蔽原生事件
+                    return false;
                 });
             }
 
@@ -125,18 +220,88 @@ public class MainActivity extends BaseActivity {
         }
 
         /**
-         * 设置“自动休眠”设置项的标题
+         * 刷新所有设置项
          */
-        private void setDormantTitle() {
-            SeekBarPreference prefDormantFormat = findPreference(getString(R.string.prefs_dormant_key));
-            if (prefDormantFormat != null) {
-                prefDormantFormat.setTitle(getString(R.string.prefs_dormant_title)
+        public void refreshPrefs() {
+            // 刷新休眠时间相关设置项
+            refreshPrefDormant();
+            // 刷新亮度相关设置项
+            refreshPrefBrightness();
+        }
+
+        /**
+         * 刷新休眠时间相关设置项
+         */
+        private void refreshPrefDormant() {
+            setDormant(SettingUtil.getDormant());
+        }
+
+        /**
+         * 刷新亮度相关设置项
+         */
+        private void refreshPrefBrightness() {
+            setBrightness(SettingUtil.getScreenBrightness());
+        }
+
+        /**
+         * 设置自动休眠时长
+         *
+         * @param input 自动休眠时长（毫秒）
+         */
+        private void setDormant(int input) {
+            SeekBarPreference prefDormant = findPreference(getString(R.string.prefs_dormant_key));
+            // 最小值
+            int min = getResources().getInteger(R.integer.prefs_dormant_min);
+            // 最大值
+            int max = getResources().getInteger(R.integer.prefs_dormant_max);
+            // 判断最终取值
+            int value = input <= min ? min : input > max ? max : input;
+            if (prefDormant != null) {
+                // 如果系统自动休眠时长的当前值和目标值不同
+                if (SettingUtil.getDormant() != value) {
+                    // 设置系统自动休眠时长
+                    SettingUtil.setDormant(value);
+                }
+                // 如果自动休眠拖动条的当前值和目标值不同
+                if (prefDormant.getValue() != value) {
+                    // 设置自动休眠拖动条值
+                    prefDormant.setValue(value);
+                }
+                // 设置“自动休眠”设置项的标题
+                prefDormant.setTitle(getString(R.string.prefs_dormant_title)
                         + "(" + TimeUtils.formatMillis((long) SettingUtil.getDormant()) + ")");
             }
         }
 
         /**
-         * 创建并显示设置“自动休眠”的对话框
+         * 设置亮度
+         *
+         * @param input 亮度（0~1023）
+         */
+        private void setBrightness(int input) {
+            SeekBarPreference prefBrightness = findPreference(getString(R.string.prefs_brightness_key));
+            // 最小值
+            int min = getResources().getInteger(R.integer.prefs_brightness_min);
+            // 最大值
+            int max = getResources().getInteger(R.integer.prefs_brightness_max);
+            // 判断最终取值
+            int value = input <= min ? min : input > max ? max : input;
+            if (prefBrightness != null) {
+                // 如果系统亮度的当前值和目标值不同
+                if (SettingUtil.getScreenBrightness() != value) {
+                    // 设置系统亮度
+                    SettingUtil.setScreenBrightness(value);
+                }
+                // 如果亮度拖动条的当前值和目标值不同
+                if (prefBrightness.getValue() != value) {
+                    // 设置亮度拖动条值
+                    prefBrightness.setValue(value);
+                }
+            }
+        }
+
+        /**
+         * 创建并显示“自动休眠”设置项的对话框
          */
         private void showDormantDialog() {
             // 创建输入框布局
@@ -154,16 +319,45 @@ public class MainActivity extends BaseActivity {
                             if (!TextUtils.isEmpty(editText.getText().toString())) {
                                 // 输入值
                                 int input = Integer.parseInt(editText.getText().toString());
-                                // 最小值
-                                int min = getResources().getInteger(R.integer.prefs_dormant_min);
-                                // 最大值
-                                int max = getResources().getInteger(R.integer.prefs_dormant_max);
                                 // 如果输入值小于最小值则使用最小值
-                                SettingUtil.setDormant(input <= min ? min : input > max ? max : input);
-                                prefDormant.setValue(SettingUtil.getDormant());
+                                setDormant(input);
                             }
-                            // 更新“自动休眠”设置的标题
-                            setDormantTitle();
+                        }
+                    })
+                    .setNegativeButton("取消", null)
+                    .setView(linearLayout).create();
+
+            // 设置软键盘自动弹出
+            Window window = alertDialog.getWindow();
+            if (window != null) {
+                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            }
+            // 显示对话框
+            alertDialog.show();
+        }
+
+        /**
+         * 创建并显示“亮度”设置项的对话框
+         */
+        private void showBrightnessDialog() {
+            // 创建输入框布局
+            LinearLayout linearLayout = buildTextLinearLayout(mActivity, R.string.prefs_brightness_key);
+
+            // 创建对话框
+            AlertDialog alertDialog = new AlertDialog.Builder(mActivity)
+                    .setTitle(getString(R.string.prefs_brightness_title))
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        SeekBarPreference prefBrightness = findPreference(getString(R.string.prefs_brightness_key));
+                        EditText editText = linearLayout.findViewById(R.id.settings_dialog_tv);
+                        // 更新设置
+                        if (prefBrightness != null && editText != null) {
+                            // 如果亮度的数值不为空，则设置亮度
+                            if (!TextUtils.isEmpty(editText.getText().toString())) {
+                                // 输入值
+                                int input = Integer.parseInt(editText.getText().toString());
+                                // 如果输入值小于最小值则使用最小值
+                                setBrightness(input);
+                            }
                         }
                     })
                     .setNegativeButton("取消", null)
@@ -210,6 +404,14 @@ public class MainActivity extends BaseActivity {
                 // 设置过滤器，限制输入长度为最大值的长度
                 editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(
                         String.valueOf(getResources().getInteger(R.integer.prefs_dormant_max)).length())});
+            } else if (resId == R.string.prefs_brightness_key) {
+                // 获取系统自动休眠时间
+                editText.setText(String.valueOf(SettingUtil.getScreenBrightness()));
+                // 设置输入类型为数字
+                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                // 设置过滤器，限制输入长度为最大值的长度
+                editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(
+                        String.valueOf(getResources().getInteger(R.integer.prefs_brightness_max)).length())});
             }
 
             // 在内容设置完成后获取焦点，保证指针在最后面
@@ -217,6 +419,13 @@ public class MainActivity extends BaseActivity {
             // 添加 editText 布局
             linearLayout.addView(editText);
             return linearLayout;
+        }
+    }
+
+    public static class EmptyFragment extends PreferenceFragmentCompat {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_empty, rootKey);
         }
     }
 }

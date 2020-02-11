@@ -7,6 +7,15 @@
         app:iconSpaceReserved="false"
         app:title="@string/prefs_dormant_header">
 
+        <!--自动调节休眠时间-->
+        <SwitchPreferenceCompat
+            android:key="@string/prefs_dormant_auto_key"
+            android:summaryOff="@string/prefs_dormant_auto_off"
+            android:summaryOn="@string/prefs_dormant_auto_on"
+            app:defaultValue="@bool/prefs_dormant_auto_default"
+            app:iconSpaceReserved="false"
+            app:title="@string/prefs_dormant_auto_title" />
+
         <!--自动休眠-->
         <!--app:showSeekBarValue 是否显示当前值-->
         <SeekBarPreference
@@ -23,6 +32,15 @@
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="@string/prefs_brightness_header">
+
+        <!--自动调节亮度-->
+        <SwitchPreferenceCompat
+            android:key="@string/prefs_brightness_auto_key"
+            android:summaryOff="@string/prefs_brightness_auto_off"
+            android:summaryOn="@string/prefs_brightness_auto_on"
+            app:defaultValue="@bool/prefs_brightness_auto_default"
+            app:iconSpaceReserved="false"
+            app:title="@string/prefs_brightness_auto_title" />
 
         <!--调整亮度-->
         <SeekBarPreference
@@ -42,9 +60,24 @@
 
         <!--切换夜间模式-->
         <SwitchPreferenceCompat
+            app:defaultValue="@bool/prefs_dark_default"
             app:iconSpaceReserved="false"
             app:key="@string/prefs_dark_key"
             app:title="@string/prefs_dark_title" />
+
+    </PreferenceCategory>
+
+    <!--其他-->
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:title="@string/prefs_other_header">
+
+        <!--打开省电用空页面-->
+        <Preference
+            app:enableCopying="true"
+            app:fragment="com.flop.settings.activity.MainActivity$EmptyFragment"
+            app:iconSpaceReserved="false"
+            app:title="@string/prefs_empty_title" />
 
     </PreferenceCategory>
 

@@ -1,21 +1,37 @@
 <resources>
+    <!--应用名称-->
     <string name="app_name">FlopSettings</string>
-    <string name="title_activity_main">设置</string>
 
     <!--应用授权失败，引导用户授权-->
     <string name="permission_request_message">获取相关权限失败:【%1$s】\n\n您选择了不再提示授权信息，或者系统默认不再提示。这将导致部分功能无法正常使用，请到设置页面手动授权。</string>
 
     <!-- 设置页面 -->
+    <!--主页面标题-->
+    <string name="title_activity_main">设置</string>
+    <!--自动调节休眠时间-->
+    <string name="prefs_dormant_auto_title">自动调节</string>
+    <string name="prefs_dormant_auto_on">打开此页面时自动将自动休眠时间设为最长</string>
+    <string name="prefs_dormant_auto_off">不自动调节休眠时间</string>
+    <string name="prefs_dormant_auto_key" translatable="false">prefs_dormant_auto_key</string>
     <!--休眠-->
     <string name="prefs_dormant_header">休眠</string>
     <string name="prefs_dormant_key" translatable="false">prefs_dormant_dialog_key</string>
     <string name="prefs_dormant_title">自动休眠</string>
+    <!--自动调节亮度-->
+    <string name="prefs_brightness_auto_title">自动调节</string>
+    <string name="prefs_brightness_auto_on">打开此页面时自动将亮度调至最低</string>
+    <string name="prefs_brightness_auto_off">不自动调节亮度</string>
+    <string name="prefs_brightness_auto_key" translatable="false">prefs_brightness_auto_key</string>
     <!--亮度-->
     <string name="prefs_brightness_header">亮度</string>
     <string name="prefs_brightness_key" translatable="false">prefs_brightness_key</string>
-    <string name="prefs_brightness_title">调整亮度</string>
+    <string name="prefs_brightness_title">调节亮度</string>
     <!--主题-->
     <string name="prefs_theme_header">主题</string>
     <string name="prefs_dark_key" translatable="false">prefs_dark_key</string>
     <string name="prefs_dark_title">夜间模式</string>
+    <!--其他-->
+    <string name="prefs_other_header">其他</string>
+    <!--空页面设置项的标题-->
+    <string name="prefs_empty_title">空页面</string>
 </resources>

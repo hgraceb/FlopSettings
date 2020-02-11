@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--是否自动调节休眠时间的默认值-->
+    <bool name="prefs_dormant_auto_default">true</bool>
+    <!--是否自动调节亮度的默认值-->
+    <bool name="prefs_brightness_auto_default">false</bool>
+    <!--是否启用夜间模式的默认值-->
+    <bool name="prefs_dark_default">false</bool>
+</resources>
