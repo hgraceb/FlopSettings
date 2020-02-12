@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--需要权限的默认为 true 会导致应用闪退，需要先申请到权限才能进行设置的修改-->
     <!--是否自动调节休眠时间的默认值-->
-    <bool name="prefs_dormant_auto_default">true</bool>
+    <bool name="prefs_dormant_auto_default">false</bool>
     <!--是否自动调节亮度的默认值-->
     <bool name="prefs_brightness_auto_default">false</bool>
     <!--是否启用夜间模式的默认值-->
