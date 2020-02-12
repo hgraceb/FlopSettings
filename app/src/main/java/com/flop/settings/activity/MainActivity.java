@@ -11,20 +11,17 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SeekBarPreference;
@@ -39,13 +36,11 @@ import com.flop.settings.util.ThemeHelper;
 import com.flop.settings.util.TimeUtils;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class MainActivity extends BaseActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, ViewTreeObserver.OnWindowFocusChangeListener {
+public class MainActivity extends BaseActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
     private static final String TAG = "FLOP";
 
     private static AppCompatActivity mActivity;
-
-    private OnWindowFocusChangedListener mOnWindowFocusChangeListener;
 
     private static Drawable mToolBarColor;
     private static Drawable mBackgroundColor;
@@ -76,6 +71,7 @@ public class MainActivity extends BaseActivity implements PreferenceFragmentComp
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
                 if (mBackgroundColor != null) {
+                    // 还原窗口背景颜色
                     getWindow().setBackgroundDrawable(mBackgroundColor);
                 }
                 if (mToolBarColor != null) {
@@ -94,38 +90,6 @@ public class MainActivity extends BaseActivity implements PreferenceFragmentComp
                 }
             }
         });
-    }
-
-    /**
-     * 监听窗口焦点变化
-     */
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        // 回调窗口焦点变化的接口
-        mOnWindowFocusChangeListener.onWindowFocusChanged(hasFocus);
-    }
-
-    /**
-     * 绑定窗口焦点变化的接口
-     */
-    @Override
-    public void onAttachFragment(@NonNull Fragment fragment) {
-        super.onAttachFragment(fragment);
-        // 只有实现了指定接口的 fragment 才可以用于接口绑定
-        try {
-            mOnWindowFocusChangeListener = (OnWindowFocusChangedListener) fragment;
-        } catch (Exception ignored) {
-        }
-    }
-
-    /**
-     * 窗口焦点变化的接口
-     */
-    public interface OnWindowFocusChangedListener {
-        /**
-         * @param hasFocus 当前窗口是否获取焦点
-         */
-        public void onWindowFocusChanged(boolean hasFocus);
     }
 
     /**
