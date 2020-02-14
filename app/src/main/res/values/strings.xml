@@ -40,4 +40,10 @@
     <!--空页面设置项的标题-->
     <string name="prefs_empty_title">空页面</string>
     <string name="prefs_empty_summary">打开纯黑空页面，降低电量消耗</string>
+    <!--双击返回键返回-->
+    <string name="prefs_back_twice_key" translatable="false">prefs_back_cancel_key</string>
+    <string name="prefs_back_twice_off">空页面点击一次返回键即返回</string>
+    <string name="prefs_back_twice_on">空页面双击返回键返回</string>
+    <string name="prefs_back_twice_title">双击返回键返回</string>
+    <string name="prefs_back_twice_toast">再按一次返回</string>
 </resources>

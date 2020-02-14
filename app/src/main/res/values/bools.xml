@@ -9,4 +9,6 @@
     <bool name="prefs_dark_default">false</bool>
     <!--是否隐藏空页面的状态栏-->
     <bool name="prefs_status_bar_hide_default">true</bool>
+    <!--空页面是否需要双击返回键才能返回-->
+    <bool name="prefs_back_cancel_default">true</bool>
 </resources>

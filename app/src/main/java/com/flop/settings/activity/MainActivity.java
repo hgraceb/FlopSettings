@@ -10,6 +10,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,16 +35,17 @@ import com.flop.settings.util.PreferencesHelper;
 import com.flop.settings.util.SettingUtil;
 import com.flop.settings.util.ThemeHelper;
 import com.flop.settings.util.TimeUtils;
+import com.flop.settings.util.ToastUtil;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MainActivity extends BaseActivity implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
-    private static final String TAG = "FLOP";
-
     private static AppCompatActivity mActivity;
 
-    private static Drawable mToolBarColor;
-    private static Drawable mBackgroundColor;
+    private static Drawable mToolBarColor;// 顶部导航栏背景
+    private static Drawable mBackgroundColor;// 窗口背景
+
+    private static long exitTime;// 记录返回键点击时间
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +108,23 @@ public class MainActivity extends BaseActivity implements PreferenceFragmentComp
             setTitle(null);
         }
         return false;
+    }
+
+    /**
+     * 监听返回键点击事件
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // 如果点击了返回键，标题为空则认为当前是在空页面
+        if (keyCode == KeyEvent.KEYCODE_BACK && getTitle() == null
+                && PreferencesHelper.isBackTwice() && System.currentTimeMillis() - exitTime > 2000) {
+            ToastUtil.showShort(this, getString(R.string.prefs_back_twice_toast));
+            // 保存当前事件点击时间
+            exitTime = System.currentTimeMillis();
+            // 返回 true 表示此事件已进行处理，不继续传播
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat implements OnWindowFocusChangedListener {
@@ -210,7 +229,7 @@ public class MainActivity extends BaseActivity implements PreferenceFragmentComp
         /**
          * 刷新所有设置项
          */
-        public void refreshPrefs() {
+        private void refreshPrefs() {
             // 刷新休眠时间相关设置项
             refreshPrefDormant();
             // 刷新亮度相关设置项

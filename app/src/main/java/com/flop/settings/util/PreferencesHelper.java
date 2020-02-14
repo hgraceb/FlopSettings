@@ -46,6 +46,14 @@ public class PreferencesHelper {
         return getBooleanFromResources(context, R.string.prefs_status_bar_hide_key, R.bool.prefs_status_bar_hide_default);
     }
 
+    /**
+     * 获取是否屏蔽空页面的返回键
+     */
+    public static boolean isBackTwice() {
+        Context context = MyApplication.getContext();
+        return getBooleanFromResources(context, R.string.prefs_back_twice_key, R.bool.prefs_back_cancel_default);
+    }
+
     public static int getIntFromResources(Context context, int resKeyId, int resDefValueId) {
         return getInt(context, context.getString(resKeyId), context.getString(resDefValueId));
     }
