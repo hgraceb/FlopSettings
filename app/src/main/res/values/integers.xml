@@ -7,5 +7,5 @@
     <!--偏好设置的亮度最大值-->
     <integer name="prefs_brightness_max">1023</integer>
     <!--偏好设置的亮度最小值-->
-    <integer name="prefs_brightness_min">18</integer>
+    <integer name="prefs_brightness_min">15</integer>
 </resources>
